@@ -1,0 +1,107 @@
+
+package Tao::DBI;
+
+use 5.006;
+use strict;
+use warnings;
+
+require Exporter;
+
+our @ISA = qw(Exporter);
+our @EXPORT = qw(dbi_connect dbi_prepare);
+
+our $VERSION = '0.00_01';
+
+use Tao::DBI::db;
+use Tao::DBI::st;
+
+sub dbi_connect {
+  return new Tao::DBI::db(@_);
+}
+
+sub dbi_prepare {
+  my $sql = shift;
+  my $args = shift;
+  return new Tao::DBI::st({ sql => $sql, %$args });
+}
+
+
+
+1;
+
+__END__
+
+=head1 NAME
+
+Tao::DBI - Portable support for named placeholders in DBI statements
+
+=head1 SYNOPSIS
+
+  use Tao::DBI qw(dbi_connect);
+  
+  $dbh = dbi_connect({ dsn => $dsn, user => $user, pass => $pass });
+  $sql = q{UPDATE T set a = :a, b = :b where k = :k};
+  $stmt = $dbh->prepare($sql);
+  $rc = $stmt->execute({ k => $k, a => $a, b => $b });
+  
+
+=head1 DESCRIPTION
+
+B<THIS IS PRE-ALPHA SOFTWARE! MANY BUGS LURKING AROUND!>
+
+perldoc DBI - section "Placeholders and Bind Values"
+
+"Some drivers also allow placeholders like :name and :n 
+(e.g., :1, :2, and so on) in addition to ?, but their 
+use is not portable."
+
+
+=over 4
+
+=item B<dbi_connect>
+
+  my $dbh = dbi_connect($args);
+
+Returns a new database connection built from the arguments
+in hash ref C<$args>. 
+
+=item B<dbi_prepare>
+
+  my $sth = dbi_prepare($args);
+
+Returns a new prepared statement. This statement supports
+named placeholders (like :a) whether the driver supports
+it or not. (However, the driver has to support ? placeholders.)
+
+You don't have to import this function if you plan
+to create DBI connections via C<Tao::DBI::dbi_connect>,
+because these will automatically support SQL with
+named placeholders in C<prepare>.
+
+=back
+
+=head2 EXPORT
+
+C<dbi_connect> and C<dbi_prepare> can be exported on demand.
+
+=head1 SEE ALSO
+
+L<DBI>
+
+=head1 BUGS
+
+Please report bugs via CPAN RT L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Tao-DBI>.
+
+=head1 AUTHOR
+
+Adriano R. Ferreira, E<lt>ferreira@cpan.orgE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2005 by Adriano R. Ferreira
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+
+=cut
