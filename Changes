@@ -1,4 +1,12 @@
 Revision history for Perl extension Tao-DBI.
 
+0.00_02  Fri Aug 26 2005
+        - POD errors (st.pm documenting Tao::DBI) fixed
+        - more POD
+        - README fixed
+
+0.00_01  Thu Aug 25 2005
+        - first release to CPAN 
+
 0.00_01  Tue Aug 24 2005
 	- original version; created by hand.

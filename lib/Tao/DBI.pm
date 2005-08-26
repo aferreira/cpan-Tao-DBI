@@ -10,7 +10,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(dbi_connect dbi_prepare);
 
-our $VERSION = '0.00_01';
+our $VERSION = '0.00_02';
 
 use Tao::DBI::db;
 use Tao::DBI::st;
@@ -83,6 +83,51 @@ named placeholders in C<prepare>.
 =head2 EXPORT
 
 C<dbi_connect> and C<dbi_prepare> can be exported on demand.
+
+=head1 PRINCIPLES OF THIS TAO
+
+Every constructor is designed to accept named 
+parameters.
+
+  my $o = new Tao::DBI::o($hashref);
+  # or
+  my $o = new Tao::DBI::o(k1 => $v1, k2 => $v2);
+
+This is one Tao, not the only one. As long
+as it aims to perfection, it is Tao. It does not
+need to aim to uniqueness. (This is not Python.
+TIMTOWTDI.)
+
+=head1 TAO STATEMENTS
+
+Tao statements are DBI statements.
+
+For Tao statements, both sets of parameters/placeholders
+and rows I<may> be represented as hash refs.
+The main point of this usage is to represent
+an ensemble of values as one.
+
+  $stmt->execute($params);
+  while ($row = $stmt->fetch_hashref()) {
+    ...
+  }
+
+If parameters are added, removed or modified
+(eg. by changing data types), the code often
+stays the same.
+
+The emphasis on naming parts (hash keys)
+also has to with this approach. Not relying
+on artificial indices is good. Self-documenting
+with well-chosen names is good too.
+
+One intentional benefit of the uniform treatment
+of statement parameters and selected rows
+is the possibility of extracting data
+via SELECT statements and injecting it
+(possibly after transformation) via INSERT
+and UPDATE statements. One example is in order,
+but I am just too lazy today.
 
 =head1 SEE ALSO
 

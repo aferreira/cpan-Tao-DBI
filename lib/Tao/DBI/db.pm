@@ -10,7 +10,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw();
 
-our $VERSION = '0.00_01';
+our $VERSION = '0.00_02';
 
 use DBI;
 use Tao::DBI::st;
@@ -21,7 +21,7 @@ use Tao::DBI::st;
 
 
 # usage:
-# $dbh = new SQL::Connection($args);
+# $dbh = new Tao::DBI::db($args);
 sub new {
   my ($proto, $args) = @_;
   my $class = ref($proto) || $proto;

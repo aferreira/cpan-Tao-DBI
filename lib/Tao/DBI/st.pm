@@ -10,7 +10,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw();
 
-our $VERSION = '0.00_01';
+our $VERSION = '0.00_02';
 
 # the instance variables:
 # DBH
@@ -113,7 +113,7 @@ __END__
 
 =head1 NAME
 
-Tao::DBI - DBI statements with portable support for named placeholders
+Tao::DBI::st - DBI statements with portable support for named placeholders
 
 =head1 SYNOPSIS
 
