@@ -10,10 +10,11 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw();
 
-our $VERSION = '0.00_02';
+our $VERSION = '0.00_04';
 
 use DBI;
 use Tao::DBI::st;
+use Tao::DBI::st_deep;
 
 # the instance variables:
 # DBH
@@ -56,12 +57,25 @@ sub initialize {
   }
 }
 
+# $stmt = $dbh->prepare($sql, $args);
+# $stmt = $dbh->prepare($args); # $args is hashref
 sub prepare {
   my $self = shift;
-  my $sql = shift;
+  my $sql;
+  $sql = shift unless ref $_[0]; # first non-ref arg
   my $args = shift || {};
-  return new Tao::DBI::st({ sql => $sql, dbh => $self->{DBH}, %$args });
-   
+  my $st_type = $args->{type} || 'plain';
+  if ($st_type eq 'plain') {
+    return new Tao::DBI::st({ 
+                 ($sql ? (sql => $sql) : ()), 
+                 dbh => $self->{DBH}, %$args });
+  } elsif ($st_type eq 'deep') {
+    return new Tao::DBI::st_deep({ 
+                 ($sql ? (sql => $sql) : ()), 
+                 dbh => $self->{DBH}, %$args });  
+  } else {
+    die "unknown statement type: $st_type\n";
+  } 
 }
 
 use vars qw ($AUTOLOAD);
@@ -78,6 +92,7 @@ sub AUTOLOAD {
   return $self->{DBH}->$meth(@_);
 }
 
+sub DESTROY {}
 
 1;
 

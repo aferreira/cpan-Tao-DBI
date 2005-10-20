@@ -10,7 +10,9 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw();
 
-our $VERSION = '0.00_02';
+our $VERSION = '0.00_05';
+
+use Carp;
 
 # the instance variables:
 # DBH
@@ -21,7 +23,7 @@ our $VERSION = '0.00_02';
 #
 # NAME
 
-# creates a SQL::Statement object (the statement is
+# creates a Tao::DBI::st object (the statement is
 # prepared during initialization).
 sub new {
   my $proto = shift;
@@ -34,12 +36,20 @@ sub new {
 # { dbh => , sql => }
 sub initialize {
   my ($self, $args) = @_;
+  croak "argument 'sql' undefined" unless defined $args->{sql};
   my $sql = $self->{SQL} = $args->{sql};
+  croak "argument 'dbh' is required" unless $args->{dbh};
   $self->{DBH} = $args->{dbh};
   my ($ssql, $places, $argns) = strip($sql);
   $self->{PLACES} = $places;
   $self->{ARGNS} = $argns;
-  $self->{STMT} = $self->{DBH}->prepare($ssql); # needs to support optional args
+  if ($self->{DBH}->isa('Tao::DBI::db')) {
+    $self->{STMT} = $self->{DBH}->{DBH}->prepare($ssql); 
+    # FIXME: needs to support optional args
+    # FIXME: knows too much on Tao::DBI::db
+  } else {
+    $self->{STMT} = $self->{DBH}->prepare($ssql);
+  }
 
 }
 
@@ -73,7 +83,7 @@ sub execute {
 
   if (!$args) {
     if (@{$self->{ARGNS}}) {
-       die "execute on SQL::Statement missing arguments";
+       croak "execute on SQL::Statement missing arguments";
     }
     return $self->{STMT}->execute;
 
@@ -81,7 +91,7 @@ sub execute {
     return $self->{STMT}->execute(@{%$args}{@{$self->{PLACES}}}, @_);
   } else {
     if (@{$self->{ARGNS}}!=1) {
-      die "execute on SQL::Statement with a single non-ref argument only for one-parameter statements";
+      croak "execute on SQL::Statement with a single non-ref argument only for one-parameter statements";
     }
     return $self->{STMT}->execute(($args) x @{$self->{PLACES}}, @_);
   }
@@ -100,6 +110,7 @@ sub AUTOLOAD {
   return $self->{STMT}->$meth(@_);
 }
 
+sub DESTROY {}
 
 1;
 

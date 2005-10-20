@@ -1,6 +1,14 @@
 Revision history for Perl extension Tao-DBI.
 
+0.00_05  Wed Oct 19 2005
+       - Tao::DBI::st croaks on undef 'sql'
+       - Tao::DBI uses croak rather than die
+
+0.00_03  Sun Aug 29 2005
+        - deep Tao statements - absolute beginning
+
 0.00_02  Fri Aug 26 2005
+        - second release to CPAN
         - POD errors (st.pm documenting Tao::DBI) fixed
         - more POD
         - README fixed
