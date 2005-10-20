@@ -10,7 +10,7 @@ require Exporter;
 our @ISA = qw(Tao::DBI::st);
 our @EXPORT = qw();
 
-our $VERSION = '0.00_05';
+our $VERSION = '0.00_06';
 
 use Tao::DBI::st;
 use Carp;
@@ -24,7 +24,7 @@ sub initialize {
   my ($self, $args) = @_;
   $self->SUPER::initialize($args);
   $self->{META} = $args->{meta};
-
+  return $self
 }
 
 ###############

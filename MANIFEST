@@ -7,6 +7,9 @@ t/001compile.t
 t/002basic.t
 t/005tr_hash.t
 t/006deep.t
+t/007bad.t
+t/008edges.t
+t/009uc_key.t
 t/090pod.t
 
 lib/Tao/DBI.pm

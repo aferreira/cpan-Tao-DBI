@@ -1,0 +1,37 @@
+
+use Test::More;
+
+eval "require DBD::SQLite";
+plan skip_all => "DBD::SQLite required for testing Tao::DBI" if $@;
+
+# this script test preparing statements with invalid SQL
+
+plan tests => 5;
+
+use_ok('Tao::DBI', qw(dbi_connect));
+
+END { 
+  unlink 't/t.db' if -e 't/t.db' 
+}
+
+my $dbh = dbi_connect({ dsn => 'dbi:SQLite:dbname=t/t.db', PrintError => 0 });
+ok($dbh, 'defined $dbh');
+
+{
+  my $sql = qq{THIS IS NOT SQL}; # bad input: not SQL at all
+  my $sth = $dbh->prepare($sql);
+  is($sth, undef, 'prepare with bad SQL returns undef');
+}
+
+{
+  my $sql = qq{SELECT #}; # with a strange character #
+  my $sth = $dbh->prepare($sql);
+  is($sth, undef, 'prepare with bad SQL returns undef');
+}
+
+{
+  my $sql = qq{SELECT shoo}; # with an unknown field/column
+  my $sth = $dbh->prepare($sql);
+  is($sth, undef, 'prepare with bad SQL returns undef');
+}
+

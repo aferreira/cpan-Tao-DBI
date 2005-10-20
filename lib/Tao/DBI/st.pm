@@ -10,7 +10,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw();
 
-our $VERSION = '0.00_05';
+our $VERSION = '0.00_06';
 
 use Carp;
 
@@ -29,8 +29,8 @@ sub new {
   my $proto = shift;
   my $class = ref($proto) || $proto;
   my $obj = bless {}, $class;
-  $obj->initialize(@_);
-  return $obj;
+  return $obj->initialize(@_);
+
 }
 
 # { dbh => , sql => }
@@ -50,7 +50,11 @@ sub initialize {
   } else {
     $self->{STMT} = $self->{DBH}->prepare($ssql);
   }
-
+  unless ($self->{STMT}) {
+    %$self = ();
+    return undef;
+  }
+  return $self
 }
 
 # ($ssql, $places, $argns) = strip($sql);
@@ -65,7 +69,7 @@ sub strip {
     $ssql .= "?", push(@places, $1), $args{$1}=1, next
       if /\G:(\w+)/gc;
     $ssql .= $1, next
-      if /\G([^:]*)/gc;
+      if /\G(:?[^:]*)/gc;
     last;
   }
   # if not at the end of string, invalid use of :[^\w:] -> not yet implemented

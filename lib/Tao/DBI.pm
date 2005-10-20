@@ -10,7 +10,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(dbi_connect dbi_prepare);
 
-our $VERSION = '0.00_05';
+our $VERSION = '0.00_06';
 
 use Tao::DBI::db;
 use Tao::DBI::st;

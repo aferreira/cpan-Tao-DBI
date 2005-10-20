@@ -10,7 +10,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw();
 
-our $VERSION = '0.00_04';
+our $VERSION = '0.00_06';
 
 use DBI;
 use Tao::DBI::st;
@@ -45,6 +45,9 @@ sub initialize {
   $self->{URL} = $args->{dsn} || $args->{url};
   $self->{USER} = $args->{user};
   $self->{PASS} = $args->{password};
+  unless (exists $args->{FetchHashKeyName}) {
+      $args->{FetchHashKeyName} = 'NAME_lc';
+  }
 
   my $dbh = DBI->connect($self->{URL},
                          $self->{USER},
@@ -122,6 +125,14 @@ Tao::DBI::db - DBI connection with portable support for named placeholders in st
 
 
 =over 4
+
+=item B<new>
+
+  $dbh = DBI::db::new($args)
+
+Note. Unless C<$args> has an explicit pair at key C<"FetchHashKeyName">,
+the connection uses C<"FetchHashKeyName" => 'NAME_lc'> which
+forces the keys in C<fetchrow_arrayref> to come in lower case.
 
 =item B<execute>
 

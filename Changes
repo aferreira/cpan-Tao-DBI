@@ -1,5 +1,18 @@
 Revision history for Perl extension Tao-DBI.
 
+0.00_06  Thu Oct 20 2005
+        - Tao::DBI::st::initialize() now returns the newly 
+          created statement (or not)
+        - FIX: prepare() and Tao::DBI::st::new() return undef
+          if raw DBI::prepare() returned undef
+        - FIX: ':' followed by /[^\w]/ should be literally 
+          interpreted, but instead was leaving the SQL with
+          translated ? placeholders incomplete
+        - the default DBI attribute FetchHashKeyName for Tao
+          connections is now 'NAME_lc' - it still misses
+          integration with Tao::DBI::st in execute()
+        - added new tests "t/007bad.t", "t/008edges.t", "t/009uc_key.t"
+
 0.00_05  Wed Oct 19 2005
        - Tao::DBI::st croaks on undef 'sql'
        - Tao::DBI uses croak rather than die
@@ -17,4 +30,4 @@ Revision history for Perl extension Tao-DBI.
         - first release to CPAN 
 
 0.00_01  Tue Aug 24 2005
-	- original version; created by hand.
+        - original version; created by hand.
