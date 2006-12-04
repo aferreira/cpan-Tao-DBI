@@ -1,5 +1,13 @@
 Revision history for Perl extension Tao-DBI.
 
+0.00007  Mon Nov 4 2006
+        - this immature code was promoted to a non-development version
+        - expression @{%$href}{@idx} used in Tao::DBI::st corrected to
+          @{$href}{@idx}
+        - I am suspicious some DBD::SQLite versions raised an error
+          when preparing statements with invalid SQL, so
+          RaiseError => 0 is explicit now in t/007bad.t
+
 0.00_06  Thu Oct 20 2005
         - Tao::DBI::st::initialize() now returns the newly 
           created statement (or not)

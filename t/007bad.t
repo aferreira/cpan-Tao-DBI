@@ -4,6 +4,8 @@ use Test::More;
 eval "require DBD::SQLite";
 plan skip_all => "DBD::SQLite required for testing Tao::DBI" if $@;
 
+diag("DBD::SQLite VERSION: $DBD::SQLite::VERSION");
+
 # this script test preparing statements with invalid SQL
 
 plan tests => 5;
@@ -14,7 +16,10 @@ END {
   unlink 't/t.db' if -e 't/t.db' 
 }
 
-my $dbh = dbi_connect({ dsn => 'dbi:SQLite:dbname=t/t.db', PrintError => 0 });
+my $dbh = dbi_connect({ dsn => 'dbi:SQLite:dbname=t/t.db', 
+                        PrintError => 0, # be quiet
+                        RaiseError => 0  # don't die
+                      });
 ok($dbh, 'defined $dbh');
 
 {

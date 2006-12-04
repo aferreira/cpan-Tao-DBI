@@ -10,7 +10,7 @@ require Exporter;
 our @ISA = qw(Tao::DBI::st);
 our @EXPORT = qw();
 
-our $VERSION = '0.00_06';
+our $VERSION = '0.0007';
 
 use Tao::DBI::st;
 use Carp;

@@ -10,7 +10,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw();
 
-our $VERSION = '0.00_06';
+our $VERSION = '0.0007';
 
 use Carp;
 
@@ -92,7 +92,7 @@ sub execute {
     return $self->{STMT}->execute;
 
   } elsif (ref $args) {
-    return $self->{STMT}->execute(@{%$args}{@{$self->{PLACES}}}, @_);
+    return $self->{STMT}->execute(@{$args}{@{$self->{PLACES}}}, @_);
   } else {
     if (@{$self->{ARGNS}}!=1) {
       croak "execute on SQL::Statement with a single non-ref argument only for one-parameter statements";
@@ -179,7 +179,7 @@ Adriano R. Ferreira, E<lt>ferreira@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2005 by Adriano R. Ferreira
+Copyright (C) 2005, 2006 by Adriano R. Ferreira
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

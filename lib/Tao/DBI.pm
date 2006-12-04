@@ -10,7 +10,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(dbi_connect dbi_prepare);
 
-our $VERSION = '0.00_06';
+our $VERSION = '0.0007';
 
 use Tao::DBI::db;
 use Tao::DBI::st;
@@ -143,7 +143,7 @@ Adriano R. Ferreira, E<lt>ferreira@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2005 by Adriano R. Ferreira
+Copyright (C) 2005, 2006 by Adriano R. Ferreira
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
