@@ -8,15 +8,15 @@ diag("DBD::SQLite VERSION: $DBD::SQLite::VERSION");
 
 # this script test preparing statements with invalid SQL
 
-plan tests => 5;
+plan tests => 6;
 
-use_ok('Tao::DBI', qw(dbi_connect));
+use_ok('Tao::DBI');
 
 END { 
   unlink 't/t.db' if -e 't/t.db' 
 }
 
-my $dbh = dbi_connect({ dsn => 'dbi:SQLite:dbname=t/t.db', 
+my $dbh = Tao::DBI->connect({ dsn => 'dbi:SQLite:dbname=t/t.db', 
                         PrintError => 0, # be quiet
                         RaiseError => 0  # don't die
                       });
@@ -40,3 +40,4 @@ ok($dbh, 'defined $dbh');
   is($sth, undef, 'prepare with bad SQL returns undef');
 }
 
+ok($dbh->disconnect, "successful disconnection");

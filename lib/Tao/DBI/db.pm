@@ -10,7 +10,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw();
 
-our $VERSION = '0.0007';
+our $VERSION = '0.0008';
 
 use DBI;
 use Tao::DBI::st;
@@ -47,6 +47,9 @@ sub initialize {
   $self->{PASS} = $args->{password};
   unless (exists $args->{FetchHashKeyName}) {
       $args->{FetchHashKeyName} = 'NAME_lc';
+  }
+  unless (exists $args->{AutoCommit}) {
+      $args->{AutoCommit} = 0;
   }
 
   my $dbh = DBI->connect($self->{URL},
@@ -134,6 +137,10 @@ Note. Unless C<$args> has an explicit pair at key C<"FetchHashKeyName">,
 the connection uses C<"FetchHashKeyName" => 'NAME_lc'> which
 forces the keys in C<fetchrow_arrayref> to come in lower case.
 
+Note. Unless C<$args> has an explicit pair at key C<"AutoCommit">,
+the connection uses C<"AutoCommit" => 0> which
+means you have to commit or rollback explicitly.
+
 =item B<execute>
 
   $sth->execute($hash);
@@ -164,7 +171,7 @@ Adriano R. Ferreira, E<lt>ferreira@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2005 by Adriano R. Ferreira
+Copyright (C) 2005-2007 by Adriano R. Ferreira
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

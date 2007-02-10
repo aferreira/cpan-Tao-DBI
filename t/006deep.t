@@ -4,15 +4,15 @@ use Test::More;
 eval "require DBD::SQLite";
 plan skip_all => "DBD::SQLite required for testing Tao::DBI" if $@;
 
-plan tests => 10;
+plan tests => 12;
 
-use_ok('Tao::DBI', qw(dbi_connect));
+use_ok('Tao::DBI');
 
 END { 
   unlink 't/t.db' if -e 't/t.db' 
 }
 
-my $dbh = dbi_connect({ dsn => 'dbi:SQLite:dbname=t/t.db' });
+my $dbh = Tao::DBI->connect({ dsn => 'dbi:SQLite:dbname=t/t.db' });
 ok($dbh, 'defined $dbh');
 
 my $ans;
@@ -48,4 +48,7 @@ ok($ans, 'exec SELECT (with single non-ref arg) ok');
 $row = $sth->fetchrow_hashref();
 is_deeply($row, { a => 1, b => 1, k => 1, c => 'string', d => {} }, 'fetch ok');
 
+ok($sth->finish, "successful closing statement");
+
+ok($dbh->disconnect, "successful disconnection");
 

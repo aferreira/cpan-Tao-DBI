@@ -4,15 +4,15 @@ use Test::More;
 eval "require DBD::SQLite";
 plan skip_all => "DBD::SQLite required for testing Tao::DBI" if $@;
 
-plan tests => 10;
+plan tests => 11;
 
-use_ok('Tao::DBI', qw(dbi_connect));
+use_ok('Tao::DBI');
 
 END { 
   unlink 't/t.db' if -e 't/t.db' 
 }
 
-my $dbh = dbi_connect({ dsn => 'dbi:SQLite:dbname=t/t.db' });
+my $dbh = Tao::DBI->connect({ dsn => 'dbi:SQLite:dbname=t/t.db' });
 ok($dbh, 'defined $dbh');
 
 my $ans;
@@ -51,3 +51,4 @@ eval {
 };
 like($@, qr/sql.*undef/, 'new() w/o sql croaks');
 
+ok($dbh->disconnect, "successful disconnection");

@@ -7,15 +7,15 @@ plan skip_all => "DBD::SQLite required for testing Tao::DBI" if $@;
 # this script is to make sure handling 'hh::mi' or 'hh:'||'mi"
 # works alright
 
-plan tests => 10;
+plan tests => 11;
 
-use_ok('Tao::DBI', qw(dbi_connect));
+use_ok('Tao::DBI');
 
 END { 
   unlink 't/t.db' if -e 't/t.db' 
 }
 
-my $dbh = dbi_connect({ dsn => 'dbi:SQLite:dbname=t/t.db' });
+my $dbh = Tao::DBI->connect({ dsn => 'dbi:SQLite:dbname=t/t.db' });
 ok($dbh, 'defined $dbh');
 
 {
@@ -35,3 +35,5 @@ ok($dbh, 'defined $dbh');
   is($sth->fetchrow_array, 'hh:mi', 'fetchrow ok');
   is($sth->fetchrow_array, undef, 'fetchrow ok');
 }
+
+ok($dbh->disconnect, "successful disconnection");

@@ -8,14 +8,20 @@ use warnings;
 require Exporter;
 
 our @ISA = qw(Exporter);
-our @EXPORT = qw(dbi_connect dbi_prepare);
+#our @EXPORT = qw(dbi_connect dbi_prepare);
+our @EXPORT = qw(dbi_prepare);
 
-our $VERSION = '0.0007';
+our $VERSION = '0.0008';
 
 use Tao::DBI::db;
 use Tao::DBI::st;
 
 sub dbi_connect {
+    __PACKAGE__->connect(@_);
+}
+
+sub connect {
+  shift; 
   return new Tao::DBI::db(@_);
 }
 
@@ -24,8 +30,6 @@ sub dbi_prepare {
   my $args = shift;
   return new Tao::DBI::st({ sql => $sql, %$args });
 }
-
-
 
 1;
 
@@ -37,9 +41,9 @@ Tao::DBI - Portable support for named placeholders in DBI statements
 
 =head1 SYNOPSIS
 
-  use Tao::DBI qw(dbi_connect);
+  use Tao::DBI;
   
-  $dbh = dbi_connect({ dsn => $dsn, user => $user, pass => $pass });
+  $dbh = Tao::DBI->connect({ dsn => $dsn, user => $user, pass => $pass });
   $sql = q{UPDATE T set a = :a, b = :b where k = :k};
   $stmt = $dbh->prepare($sql);
   $rc = $stmt->execute({ k => $k, a => $a, b => $b });
@@ -58,12 +62,16 @@ use is not portable."
 
 =over 4
 
-=item B<dbi_connect>
+=item B<connect>
 
-  my $dbh = dbi_connect($args);
+  my $dbh = Tao::DBI->connect($args);
 
 Returns a new database connection built from the arguments
 in hash ref C<$args>. 
+
+I<Note.> The previous C<dbi_prepare> function which was
+exported on demand was deprecated in favor of this class
+method that looks more DBIsh.
 
 =item B<dbi_prepare>
 
@@ -83,6 +91,8 @@ named placeholders in C<prepare>.
 =head2 EXPORT
 
 C<dbi_connect> and C<dbi_prepare> can be exported on demand.
+C<dbi_connect> was deprecated. I think C<dbi_prepare> will
+have the same fate soon.
 
 =head1 PRINCIPLES OF THIS TAO
 
@@ -143,7 +153,7 @@ Adriano R. Ferreira, E<lt>ferreira@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2005, 2006 by Adriano R. Ferreira
+Copyright (C) 2005-2007 by Adriano R. Ferreira
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

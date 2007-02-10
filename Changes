@@ -1,6 +1,12 @@
 Revision history for Perl extension Tao-DBI.
 
-0.00007  Mon Nov 4 2006
+0.0008   Sat Feb 10 2007
+        - the default DBI attribute AutoCommit for Tao
+          connections is now '0'
+        - &dbi_connect was deprecated and replaced by
+          the class method Tao::DBI->connect
+
+0.0007   Mon Nov 4 2006
         - this immature code was promoted to a non-development version
         - expression @{%$href}{@idx} used in Tao::DBI::st corrected to
           @{$href}{@idx}
