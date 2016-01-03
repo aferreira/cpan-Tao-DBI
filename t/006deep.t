@@ -4,6 +4,9 @@ use Test::More;
 eval "require DBD::SQLite";
 plan skip_all => "DBD::SQLite required for testing Tao::DBI" if $@;
 
+eval "require YAML";
+plan skip_all => "YAML required for this Tao::DBI test" if $@;
+
 plan tests => 12;
 
 use_ok('Tao::DBI');
