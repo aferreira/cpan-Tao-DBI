@@ -12,7 +12,7 @@ WriteMakefile(
     }, 
     ($] >= 5.005 ? (
        ABSTRACT_FROM  => 'lib/Tao/DBI.pm', # retrieve abstract from module
-       AUTHOR         => 'A. R. Ferreira <ferreira@cpan.org>',
+       AUTHOR         => 'Adriano R. Ferreira <ferreira@cpan.org>',
     ) : ()),
     ($EUMM_VERSION > 6.4501 ? (
         META_MERGE => {
