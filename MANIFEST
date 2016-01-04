@@ -16,4 +16,3 @@ lib/Tao/DBI.pm
 lib/Tao/DBI/db.pm
 lib/Tao/DBI/st.pm
 lib/Tao/DBI/st_deep.pm
-META.yml                                 Module meta-data (added by MakeMaker)
