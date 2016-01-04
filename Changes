@@ -1,5 +1,8 @@
 Revision history for Perl extension Tao-DBI.
 
+0.01     Sun Jan 3 2016
+        - Skip t/006deep.t if YAML is not installed (CPAN RT #109435)
+
 0.0008   Sat Feb 10 2007
         - the default DBI attribute AutoCommit for Tao
           connections is now '0'
