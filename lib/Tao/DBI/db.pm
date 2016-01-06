@@ -7,7 +7,7 @@ use warnings;
 
 require Exporter;
 
-our @ISA = qw(Exporter);
+our @ISA    = qw(Exporter);
 our @EXPORT = qw();
 
 our $VERSION = '0.01';
@@ -20,15 +20,14 @@ use Tao::DBI::st_deep;
 # DBH
 # NAME
 
-
 # usage:
 # $dbh = new Tao::DBI::db($args);
 sub new {
-  my ($proto, $args) = @_;
-  my $class = ref($proto) || $proto;
-  my $obj = bless {}, $class;
-  $obj->initialize($args);
-  return $obj;
+    my ( $proto, $args ) = @_;
+    my $class = ref($proto) || $proto;
+    my $obj = bless {}, $class;
+    $obj->initialize($args);
+    return $obj;
 }
 
 # usage:
@@ -39,49 +38,58 @@ sub new {
 #
 # protected
 sub initialize {
-  my ($self, $args) = @_;
+    my ( $self, $args ) = @_;
 
-  $self->{NAME} = $args->{name};
-  $self->{URL} = $args->{dsn} || $args->{url};
-  $self->{USER} = $args->{user};
-  $self->{PASS} = $args->{password};
-  unless (exists $args->{FetchHashKeyName}) {
-      $args->{FetchHashKeyName} = 'NAME_lc';
-  }
-  unless (exists $args->{AutoCommit}) {
-      $args->{AutoCommit} = 0;
-  }
+    $self->{NAME} = $args->{name};
+    $self->{URL}  = $args->{dsn} || $args->{url};
+    $self->{USER} = $args->{user};
+    $self->{PASS} = $args->{password};
+    unless ( exists $args->{FetchHashKeyName} ) {
+        $args->{FetchHashKeyName} = 'NAME_lc';
+    }
+    unless ( exists $args->{AutoCommit} ) {
+        $args->{AutoCommit} = 0;
+    }
 
-  my $dbh = DBI->connect($self->{URL},
-                         $self->{USER},
-                         $self->{PASS},
-                         $args); # remaining arguments can be passed to DBI->connect (needs improving!)
-  if ($dbh) {
-    $self->{DBH} = $dbh;
-  } else {
-    die "Can't establish connection '$self->{NAME}': $DBI::errstr\n";
-  }
+    my $dbh = DBI->connect( $self->{URL}, $self->{USER}, $self->{PASS}, $args )
+      ;   # remaining arguments can be passed to DBI->connect (needs improving!)
+    if ($dbh) {
+        $self->{DBH} = $dbh;
+    }
+    else {
+        die "Can't establish connection '$self->{NAME}': $DBI::errstr\n";
+    }
 }
 
 # $stmt = $dbh->prepare($sql, $args);
 # $stmt = $dbh->prepare($args); # $args is hashref
 sub prepare {
-  my $self = shift;
-  my $sql;
-  $sql = shift unless ref $_[0]; # first non-ref arg
-  my $args = shift || {};
-  my $st_type = $args->{type} || 'plain';
-  if ($st_type eq 'plain') {
-    return new Tao::DBI::st({ 
-                 ($sql ? (sql => $sql) : ()), 
-                 dbh => $self->{DBH}, %$args });
-  } elsif ($st_type eq 'deep') {
-    return new Tao::DBI::st_deep({ 
-                 ($sql ? (sql => $sql) : ()), 
-                 dbh => $self->{DBH}, %$args });  
-  } else {
-    die "unknown statement type: $st_type\n";
-  } 
+    my $self = shift;
+    my $sql;
+    $sql = shift unless ref $_[0];    # first non-ref arg
+    my $args    = shift         || {};
+    my $st_type = $args->{type} || 'plain';
+    if ( $st_type eq 'plain' ) {
+        return new Tao::DBI::st(
+            {
+                ( $sql ? ( sql => $sql ) : () ),
+                dbh => $self->{DBH},
+                %$args
+            }
+        );
+    }
+    elsif ( $st_type eq 'deep' ) {
+        return new Tao::DBI::st_deep(
+            {
+                ( $sql ? ( sql => $sql ) : () ),
+                dbh => $self->{DBH},
+                %$args
+            }
+        );
+    }
+    else {
+        die "unknown statement type: $st_type\n";
+    }
 }
 
 use vars qw ($AUTOLOAD);
@@ -92,13 +100,13 @@ use vars qw ($AUTOLOAD);
 # this needs improvement: non existent methods will provoke weird
 # messages from DBI objects, instead of Tao::DBI::db
 sub AUTOLOAD {
-  my $self = shift;
-  my $meth = $AUTOLOAD;
-  $meth =~ s/.*:://;
-  return $self->{DBH}->$meth(@_);
+    my $self = shift;
+    my $meth = $AUTOLOAD;
+    $meth =~ s/.*:://;
+    return $self->{DBH}->$meth(@_);
 }
 
-sub DESTROY {}
+sub DESTROY { }
 
 1;
 

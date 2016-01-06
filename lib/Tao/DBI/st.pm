@@ -7,7 +7,7 @@ use warnings;
 
 require Exporter;
 
-our @ISA = qw(Exporter);
+our @ISA    = qw(Exporter);
 our @EXPORT = qw();
 
 our $VERSION = '0.01';
@@ -26,79 +26,87 @@ use Carp;
 # creates a Tao::DBI::st object (the statement is
 # prepared during initialization).
 sub new {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $obj = bless {}, $class;
-  return $obj->initialize(@_);
+    my $proto = shift;
+    my $class = ref($proto) || $proto;
+    my $obj   = bless {}, $class;
+    return $obj->initialize(@_);
 
 }
 
 # { dbh => , sql => }
 sub initialize {
-  my ($self, $args) = @_;
-  croak "argument 'sql' undefined" unless defined $args->{sql};
-  my $sql = $self->{SQL} = $args->{sql};
-  croak "argument 'dbh' is required" unless $args->{dbh};
-  $self->{DBH} = $args->{dbh};
-  my ($ssql, $places, $argns) = strip($sql);
-  $self->{PLACES} = $places;
-  $self->{ARGNS} = $argns;
-  if ($self->{DBH}->isa('Tao::DBI::db')) {
-    $self->{STMT} = $self->{DBH}->{DBH}->prepare($ssql); 
-    # FIXME: needs to support optional args
-    # FIXME: knows too much on Tao::DBI::db
-  } else {
-    $self->{STMT} = $self->{DBH}->prepare($ssql);
-  }
-  unless ($self->{STMT}) {
-    %$self = ();
-    return undef;
-  }
-  return $self
+    my ( $self, $args ) = @_;
+    croak "argument 'sql' undefined" unless defined $args->{sql};
+    my $sql = $self->{SQL} = $args->{sql};
+    croak "argument 'dbh' is required" unless $args->{dbh};
+    $self->{DBH} = $args->{dbh};
+    my ( $ssql, $places, $argns ) = strip($sql);
+    $self->{PLACES} = $places;
+    $self->{ARGNS}  = $argns;
+
+    if ( $self->{DBH}->isa('Tao::DBI::db') ) {
+        $self->{STMT} = $self->{DBH}->{DBH}->prepare($ssql);
+
+        # FIXME: needs to support optional args
+        # FIXME: knows too much on Tao::DBI::db
+    }
+    else {
+        $self->{STMT} = $self->{DBH}->prepare($ssql);
+    }
+    unless ( $self->{STMT} ) {
+        %$self = ();
+        return undef;
+    }
+    return $self;
 }
 
 # ($ssql, $places, $argns) = strip($sql);
 sub strip {
-  my $sql = shift;
-  my $ssql = '';
-  my @places = (); my %args = ();
+    my $sql    = shift;
+    my $ssql   = '';
+    my @places = ();
+    my %args   = ();
 
-  for ( $_ = $sql; ; ) {
-    $ssql .= ':', next
-      if /\G::/gc;
-    $ssql .= "?", push(@places, $1), $args{$1}=1, next
-      if /\G:(\w+)/gc;
-    $ssql .= $1, next
-      if /\G(:?[^:]*)/gc;
-    last;
-  }
-  # if not at the end of string, invalid use of :[^\w:] -> not yet implemented
+    for ( $_ = $sql ; ; ) {
+        $ssql .= ':', next
+          if /\G::/gc;
+        $ssql .= "?", push( @places, $1 ), $args{$1} = 1, next
+          if /\G:(\w+)/gc;
+        $ssql .= $1, next
+          if /\G(:?[^:]*)/gc;
+        last;
+    }
 
-  my @argns = keys %args;
-  return ($ssql, \@places, \@argns);
+    # if not at the end of string, invalid use of :[^\w:] -> not yet implemented
+
+    my @argns = keys %args;
+    return ( $ssql, \@places, \@argns );
 }
 
 # $stmt->execute($hash_ref)
 # $stmt->execute($scalar)
 # $stmt->execute
 sub execute {
-  my $self = shift;
-  my $args = shift;
+    my $self = shift;
+    my $args = shift;
 
-  if (!$args) {
-    if (@{$self->{ARGNS}}) {
-       croak "execute on SQL::Statement missing arguments";
-    }
-    return $self->{STMT}->execute;
+    if ( !$args ) {
+        if ( @{ $self->{ARGNS} } ) {
+            croak "execute on SQL::Statement missing arguments";
+        }
+        return $self->{STMT}->execute;
 
-  } elsif (ref $args) {
-    return $self->{STMT}->execute(@{$args}{@{$self->{PLACES}}}, @_);
-  } else {
-    if (@{$self->{ARGNS}}!=1) {
-      croak "execute on SQL::Statement with a single non-ref argument only for one-parameter statements";
     }
-    return $self->{STMT}->execute(($args) x @{$self->{PLACES}}, @_);
-  }
+    elsif ( ref $args ) {
+        return $self->{STMT}->execute( @{$args}{ @{ $self->{PLACES} } }, @_ );
+    }
+    else {
+        if ( @{ $self->{ARGNS} } != 1 ) {
+            croak
+"execute on SQL::Statement with a single non-ref argument only for one-parameter statements";
+        }
+        return $self->{STMT}->execute( ($args) x @{ $self->{PLACES} }, @_ );
+    }
 }
 
 # fetch*
@@ -108,13 +116,13 @@ use vars qw($AUTOLOAD);
 # If method wasn't found, delegates to STMT instance variable.
 # This way, instances of this class behaves like DBI statements.
 sub AUTOLOAD {
-  my $self = shift;
-  my $meth = $AUTOLOAD;
-  $meth =~ s/.*:://;
-  return $self->{STMT}->$meth(@_);
+    my $self = shift;
+    my $meth = $AUTOLOAD;
+    $meth =~ s/.*:://;
+    return $self->{STMT}->$meth(@_);
 }
 
-sub DESTROY {}
+sub DESTROY { }
 
 1;
 
@@ -122,7 +130,6 @@ sub DESTROY {}
 # In SQL statements, ':' has a special meaning as the prefix of a placeholder.
 # If you need to include ':' within a statement to be literally interpreted,
 # double it: '::'.
-
 
 __END__
 

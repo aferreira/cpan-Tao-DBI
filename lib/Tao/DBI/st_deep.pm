@@ -7,7 +7,7 @@ use warnings;
 
 require Exporter;
 
-our @ISA = qw(Tao::DBI::st);
+our @ISA    = qw(Tao::DBI::st);
 our @EXPORT = qw();
 
 our $VERSION = '0.01';
@@ -21,45 +21,45 @@ use Carp;
 # initiates a Tao::DBI::st_deep object
 # { dbh => , sql => , meta => , }
 sub initialize {
-  my ($self, $args) = @_;
-  $self->SUPER::initialize($args);
-  $self->{META} = $args->{meta};
-  return $self
+    my ( $self, $args ) = @_;
+    $self->SUPER::initialize($args);
+    $self->{META} = $args->{meta};
+    return $self;
 }
 
 ###############
 
 sub to_perl {
-  require Data::Dumper;
-  local $Data::Dumper::SortKeys = 1;
-  return Data::Dumper::Dumper(shift);
+    require Data::Dumper;
+    local $Data::Dumper::SortKeys = 1;
+    return Data::Dumper::Dumper(shift);
 }
 
 sub to_yaml {
-  require YAML;
-  return YAML::Dump(shift);
+    require YAML;
+    return YAML::Dump(shift);
 }
 
 sub from_perl {
-  no strict 'vars';
-  my $data = eval shift; # oops! that's DANGEROUS!
-  die $@ if $@;
-  return $data;
+    no strict 'vars';
+    my $data = eval shift;    # oops! that's DANGEROUS!
+    die $@ if $@;
+    return $data;
 }
 
 sub from_yaml {
-  require YAML;
-  return YAML::Load(shift);
+    require YAML;
+    return YAML::Load(shift);
 }
 
 my %tr_functions = (
-  ddumper => \&to_perl,
-  yaml => \&to_yaml,
+    ddumper => \&to_perl,
+    yaml    => \&to_yaml,
 );
 
 my %i_tr_functions = (
-  ddumper => \&from_perl,
-  yaml => \&from_yaml,
+    ddumper => \&from_perl,
+    yaml    => \&from_yaml,
 );
 
 # $g = tr_hash($h, $ctl) converts hashrefs to hashrefs
@@ -75,77 +75,80 @@ sub tr_hash {
     my $inv = shift;
 
     my %h = %$h;
-    my %g; # the result
-    my %m; # the visited keys
+    my %g;    # the result
+    my %m;    # the visited keys
     my @ctl = @$ctl;
 
     while (@ctl) {
-        my ($k, $fk) = split ':', shift @ctl;
-        my ($v, $fv) = split ':', shift @ctl;
+        my ( $k, $fk ) = split ':', shift @ctl;
+        my ( $v, $fv ) = split ':', shift @ctl;
 
         if ($inv) {
-            ($k, $v) = ($v, $k);
-            ($fk, $fv) = ($fv, $fk);
+            ( $k,  $v )  = ( $v,  $k );
+            ( $fk, $fv ) = ( $fv, $fk );
         }
 
-        if ($k eq '*') { # h{*} -> g{$k}
-            while (my ($a, $b) = each %h) {
+        if ( $k eq '*' ) {    # h{*} -> g{$k}
+            while ( my ( $a, $b ) = each %h ) {
                 $g{$v}{$a} = $b, $m{$a}++ unless $m{$a};
             }
             if ($fv) {
-                $g{$v} = &{ $tr_functions{$fv} }($g{$v});
+                $g{$v} = &{ $tr_functions{$fv} }( $g{$v} );
             }
-        } elsif ($v eq '*') { # h{$k} -> g{*}
+        }
+        elsif ( $v eq '*' ) {    # h{$k} -> g{*}
             if ($fk) {
-                $h{$k} = &{ $i_tr_functions{$fk} }($h{$k});
+                $h{$k} = &{ $i_tr_functions{$fk} }( $h{$k} );
             }
-            croak "val at '$k' (", (ref $h{$k} || 'non-ref scalar'), ") should be hashref" unless ref $h{$k} eq 'HASH'; # FIXME: 
-            while (my ($a, $b) = each %{$h{$k}}) {
+            croak "val at '$k' (", ( ref $h{$k} || 'non-ref scalar' ),
+              ") should be hashref"
+              unless ref $h{$k} eq 'HASH';    # FIXME:
+            while ( my ( $a, $b ) = each %{ $h{$k} } ) {
                 $g{$a} = $b;
             }
             $m{$k}++;
-        } else {
+        }
+        else {
             $g{$v} = $h{$k};
             $m{$k}++;
         }
 
     }
 
-    return \%g; 
+    return \%g;
 }
 
 # sub comp_map_h {
 # }
 # returns a sub which does the same map_h
 
-
 ###############
 
 sub trace {
     my $self = shift;
-    return 0; # FIXME: $self->{TRACE} || $self->{DBH}->{TRACE}
+    return 0;    # FIXME: $self->{TRACE} || $self->{DBH}->{TRACE}
 }
 
 sub fetchrow_hashref {
-  my $self = shift;
-  my $raw = $self->SUPER::fetchrow_hashref(@_);
-  return undef unless defined $raw;
-  if ($self->trace) { require YAML; warn YAML::Dump({ RAW => $raw }) };
-  my $row = tr_hash($raw, $self->{META}, 1);
+    my $self = shift;
+    my $raw  = $self->SUPER::fetchrow_hashref(@_);
+    return undef unless defined $raw;
+    if ( $self->trace ) { require YAML; warn YAML::Dump( { RAW => $raw } ) }
+    my $row = tr_hash( $raw, $self->{META}, 1 );
 }
 
 sub execute {
-  my $self = shift;
-  my $bind_values = shift;
-  if (ref $bind_values) {
-    my $raw = {};
-    $raw = tr_hash($bind_values, $self->{META}) if $bind_values;
-    return $self->SUPER::execute($raw, @_);
-  } else { # single non-ref arg - we don't try transformations
-    return $self->SUPER::execute($bind_values, @_);
-  }
+    my $self        = shift;
+    my $bind_values = shift;
+    if ( ref $bind_values ) {
+        my $raw = {};
+        $raw = tr_hash( $bind_values, $self->{META} ) if $bind_values;
+        return $self->SUPER::execute( $raw, @_ );
+    }
+    else {    # single non-ref arg - we don't try transformations
+        return $self->SUPER::execute( $bind_values, @_ );
+    }
 }
-
 
 __END__
 

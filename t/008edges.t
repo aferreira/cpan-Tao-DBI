@@ -11,29 +11,29 @@ plan tests => 11;
 
 use_ok('Tao::DBI');
 
-END { 
-  unlink 't/t.db' if -e 't/t.db' 
+END {
+    unlink 't/t.db' if -e 't/t.db';
 }
 
-my $dbh = Tao::DBI->connect({ dsn => 'dbi:SQLite:dbname=t/t.db' });
-ok($dbh, 'defined $dbh');
+my $dbh = Tao::DBI->connect( { dsn => 'dbi:SQLite:dbname=t/t.db' } );
+ok( $dbh, 'defined $dbh' );
 
 {
-  my $sql = qq{SELECT 'hh::mi'};
-  my $sth = $dbh->prepare($sql);
-  ok($sth, "prepare ok ('::' is escaped ':')");
-  ok($sth->execute(), 'execute() ok');
-  is($sth->fetchrow_array, 'hh:mi', 'fetchrow ok');
-  is($sth->fetchrow_array, undef, 'fetchrow ok');
+    my $sql = qq{SELECT 'hh::mi'};
+    my $sth = $dbh->prepare($sql);
+    ok( $sth,            "prepare ok ('::' is escaped ':')" );
+    ok( $sth->execute(), 'execute() ok' );
+    is( $sth->fetchrow_array, 'hh:mi', 'fetchrow ok' );
+    is( $sth->fetchrow_array, undef,   'fetchrow ok' );
 }
 
 {
-  my $sql = qq{SELECT 'hh:'||'mi'};
-  my $sth = $dbh->prepare($sql);
-  ok($sth, "prepare ok ('::' is escaped ':')");
-  ok($sth->execute(), 'execute() ok');
-  is($sth->fetchrow_array, 'hh:mi', 'fetchrow ok');
-  is($sth->fetchrow_array, undef, 'fetchrow ok');
+    my $sql = qq{SELECT 'hh:'||'mi'};
+    my $sth = $dbh->prepare($sql);
+    ok( $sth,            "prepare ok ('::' is escaped ':')" );
+    ok( $sth->execute(), 'execute() ok' );
+    is( $sth->fetchrow_array, 'hh:mi', 'fetchrow ok' );
+    is( $sth->fetchrow_array, undef,   'fetchrow ok' );
 }
 
-ok($dbh->disconnect, "successful disconnection");
+ok( $dbh->disconnect, "successful disconnection" );

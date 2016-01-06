@@ -8,6 +8,7 @@ use warnings;
 require Exporter;
 
 our @ISA = qw(Exporter);
+
 #our @EXPORT = qw(dbi_connect dbi_prepare);
 our @EXPORT = qw(dbi_prepare);
 
@@ -21,14 +22,14 @@ sub dbi_connect {
 }
 
 sub connect {
-  shift; 
-  return new Tao::DBI::db(@_);
+    shift;
+    return new Tao::DBI::db(@_);
 }
 
 sub dbi_prepare {
-  my $sql = shift;
-  my $args = shift;
-  return new Tao::DBI::st({ sql => $sql, %$args });
+    my $sql  = shift;
+    my $args = shift;
+    return new Tao::DBI::st( { sql => $sql, %$args } );
 }
 
 1;
