@@ -14,6 +14,9 @@ WriteMakefile(
        ABSTRACT_FROM  => 'lib/Tao/DBI.pm', # retrieve abstract from module
        AUTHOR         => 'Adriano R. Ferreira <ferreira@cpan.org>',
     ) : ()),
+    ($EUMM_VERSION >= 6.31 ? (
+       LICENSE => 'perl',
+    ) : ()),
     ($EUMM_VERSION > 6.4501 ? (
         META_MERGE => {
             resources => {
