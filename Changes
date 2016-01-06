@@ -1,5 +1,9 @@
 Revision history for Perl extension Tao-DBI.
 
+0.011    Tue Jan 5 2016
+        - Fix hash randomization test failures (CPAN RT #109435)
+        - Add json support to Tao::DBI nested statements
+
 0.01     Sun Jan 3 2016
         - Skip t/006deep.t if YAML is not installed (CPAN RT #109435)
 

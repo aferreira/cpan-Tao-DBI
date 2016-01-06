@@ -12,7 +12,7 @@ our @ISA = qw(Exporter);
 #our @EXPORT = qw(dbi_connect dbi_prepare);
 our @EXPORT = qw(dbi_prepare);
 
-our $VERSION = '0.01';
+our $VERSION = '0.011';
 
 use Tao::DBI::db;
 use Tao::DBI::st;
