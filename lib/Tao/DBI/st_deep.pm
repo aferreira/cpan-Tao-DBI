@@ -40,6 +40,11 @@ sub to_yaml {
     return YAML::Dump(shift);
 }
 
+sub to_json {
+    require JSON;
+    return JSON::encode_json(shift)
+}
+
 sub from_perl {
     no strict 'vars';
     my $data = eval shift;    # oops! that's DANGEROUS!
@@ -52,14 +57,21 @@ sub from_yaml {
     return YAML::Load(shift);
 }
 
+sub from_json {
+    require JSON;
+    return JSON::decode_json(shift);
+}
+
 my %tr_functions = (
     ddumper => \&to_perl,
     yaml    => \&to_yaml,
+    json    => \&to_json,
 );
 
 my %i_tr_functions = (
     ddumper => \&from_perl,
     yaml    => \&from_yaml,
+    json    => \&from_json,
 );
 
 # $g = tr_hash($h, $ctl) converts hashrefs to hashrefs
