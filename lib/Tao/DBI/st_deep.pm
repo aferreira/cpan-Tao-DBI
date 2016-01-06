@@ -31,6 +31,7 @@ sub initialize {
 
 sub to_perl {
   require Data::Dumper;
+  local $Data::Dumper::SortKeys = 1;
   return Data::Dumper::Dumper(shift);
 }
 
